@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fffaf0;
+  --foreground: #1f2a37;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-leaf: #12b886;
+  --color-leaf-dark: #0b7a5a;
+  --color-leaf-light: #d3f9e8;
+  --color-sun: #ffc93c;
+  --color-sun-light: #fff3c4;
+  --color-coral: #ff6b6b;
+  --color-coral-light: #ffe3e3;
+  --color-grape: #7950f2;
+  --color-grape-light: #ece5ff;
+  --color-sky: #339af0;
+  --color-sky-light: #dbeeff;
+  --color-ink: #1f2a37;
+  --color-muted: #5f6b7a;
+  --font-sans: var(--font-nunito);
+  --font-display: var(--font-fredoka);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-nunito), system-ui, sans-serif;
+}
+
+/* Soft colorful blobs behind the page — the chameleon's "camouflage" */
+.blob-bg {
+  background:
+    radial-gradient(40rem 30rem at 0% 0%, #d3f9e8 0%, transparent 60%),
+    radial-gradient(35rem 25rem at 100% 10%, #ece5ff 0%, transparent 60%),
+    radial-gradient(30rem 25rem at 50% 100%, #fff3c4 0%, transparent 60%),
+    var(--background);
+}
+
+html {
+  color-scheme: light;
+  background: var(--background);
+}
+
+@utility card {
+  @apply rounded-3xl bg-white/90 p-6 shadow-[0_6px_0_0_rgba(31,42,55,0.08)] ring-1 ring-ink/5;
+}
+
+@utility btn {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-3 font-display text-base font-semibold transition-all active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility btn-primary {
+  @apply btn bg-leaf text-white shadow-[0_4px_0_0_#0b7a5a] hover:brightness-105 active:shadow-[0_1px_0_0_#0b7a5a];
+}
+
+@utility btn-secondary {
+  @apply btn bg-white text-ink ring-2 ring-ink/10 hover:ring-leaf;
+}
+
+@utility btn-danger {
+  @apply btn bg-coral text-white shadow-[0_4px_0_0_#c92a2a] hover:brightness-105;
+}
+
+@utility input {
+  @apply w-full rounded-2xl border-2 border-ink/10 bg-white px-4 py-3 text-base outline-none transition focus:border-leaf;
+}
+
+@utility label {
+  @apply mb-1.5 block font-display text-sm font-semibold text-ink;
 }
