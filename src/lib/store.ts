@@ -7,6 +7,31 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// If sign-in fails, Supabase sends the student back with the reason in the URL
+// (e.g. #error_description=...). Grab it before anything else touches the URL so
+// the login page can show it.
+const AUTH_ERROR_KEY = "chameleon-auth-error";
+if (typeof window !== "undefined") {
+  const params = new URLSearchParams(window.location.hash.slice(1) + "&" + window.location.search.slice(1));
+  const message = params.get("error_description") ?? params.get("error");
+  if (message) sessionStorage.setItem(AUTH_ERROR_KEY, message.replace(/\+/g, " "));
+}
+
+/** Returns (and forgets) the last sign-in error, if any. */
+export function takeAuthError(): string | null {
+  const message = sessionStorage.getItem(AUTH_ERROR_KEY);
+  sessionStorage.removeItem(AUTH_ERROR_KEY);
+  return message;
+}
+
+/** Turns Supabase's technical messages into something a student can act on. */
+export function friendlyAuthError(message: string): string {
+  if (/rate limit|too many|security purposes/i.test(message)) {
+    return "Too many sign-in emails were sent recently. Please wait a few minutes, or use Continue with Google.";
+  }
+  return `Sign-in didn't work: ${message}`;
+}
+
 export const supabase: SupabaseClient | null =
   url && key
     ? createClient(url, key, { auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true } })

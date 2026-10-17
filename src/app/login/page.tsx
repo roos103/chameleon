@@ -3,7 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import { isDemo, signInDemo, signInWithEmail, signInWithGoogle } from "@/lib/store";
+import {
+  friendlyAuthError,
+  isDemo,
+  signInDemo,
+  signInWithEmail,
+  signInWithGoogle,
+  takeAuthError,
+} from "@/lib/store";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -15,6 +22,13 @@ export default function LoginPage() {
   useEffect(() => {
     if (!loading && user) router.replace("/onboarding");
   }, [loading, user, router]);
+
+  // Show why a Google or magic-link sign-in bounced back here, if it did.
+  useEffect(() => {
+    const message = takeAuthError();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read from sessionStorage
+    if (message) setError(friendlyAuthError(message));
+  }, []);
 
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +42,7 @@ export default function LoginPage() {
       await signInWithEmail(email);
       setStatus("sent");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(err instanceof Error ? friendlyAuthError(err.message) : "Something went wrong. Please try again.");
       setStatus("idle");
     }
   }
